@@ -250,3 +250,93 @@ textarea {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== Common Form Components ===== */
+
+/* --- Common Input Styles --- */
+input[type="text"],
+input[type="email"],
+input[type="search"],
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-secondary);
+    box-shadow: 0 0 0 3px rgba(255, 215, 61, 0.2);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-muted);
+}
+
+/* --- Common Button Styles --- */
+button,
+.btn {
+    display: inline-block;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover,
+.btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+button:active,
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* --- Common Result/Display Box Styles --- */
+.result-box,
+.output-box,
+.display-box {
+    background: var(--bg-card);
+    border: 2px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.6;
+    margin-top: var(--space-md);
+    transition: all 0.3s ease;
+}
+
+.result-box.loading,
+.output-box.loading,
+.display-box.loading {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Input section wrapper (common pattern) */
+.input-section {
+    background: var(--bg-card);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+}
