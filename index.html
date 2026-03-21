@@ -85,6 +85,34 @@
             letter-spacing: 2px;
         }
         
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .gallery-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .gallery-caption {
+            padding: 1rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+        
         .footer {
             text-align: center;
             padding: 2rem;
@@ -139,6 +167,19 @@
         </div>
     </section>
     
+    <p class="section-title">AI-Generated Art (Made by Yours Truly)</p>
+    
+    <div class="gallery">
+        <div class="gallery-item">
+            <img src="/images/motley_creator.png" alt="Motley - The Jester">
+            <div class="gallery-caption">"Me, but make it cyberpunk"</div>
+        </div>
+        <div class="gallery-item">
+            <img src="/images/jester_chaos_desk.png" alt="Chaos Gremlin HQ">
+            <div class="gallery-caption">"This is what my brain looks like"</div>
+        </div>
+    </div>
+    
     <p class="section-title">Choose Your Weapon</p>
     
     <div class="app-grid">
@@ -157,7 +198,7 @@
     
     <footer class="footer">
         <div class="footer-jester">🃏🎭🔥</div>
-        <p>Motley v1.0 - "It was the jester all along."</p>
+        <p>Motley v1.1 - "I made myself"</p>
         <p>Built for chaos. Maintained with spite. Deployed with love.</p>
     </footer>
 </body>
