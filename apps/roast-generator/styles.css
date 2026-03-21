@@ -1,0 +1,80 @@
+/* Roast Generator Specific Styles */
+.jester { font-size: 3rem; text-align: center; margin-bottom: 1rem; }
+
+.input-section {
+    background: rgba(255,255,255,0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background: #0a0a0f;
+    color: #fff;
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: #ffd93d;
+}
+
+button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+button:hover { transform: scale(1.02); }
+button:active { transform: scale(0.98); }
+
+.roast-box {
+    background: rgba(255,255,255,0.08);
+    border: 3px solid #ff6b6b;
+    border-radius: 12px;
+    padding: 2rem;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.3rem;
+    line-height: 1.6;
+    margin-top: 1.5rem;
+    transition: all 0.3s;
+}
+
+.roast-box.loading {
+    color: #888;
+    font-style: italic;
+}
+
+.roast-box.roasted {
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px) rotate(-1deg); }
+    75% { transform: translateX(5px) rotate(1deg); }
+}
+
+.instructions {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(255,215,61,0.1);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #aaa;
+}

@@ -1,0 +1,252 @@
+/*
+ * Motley Website - Common Styles
+ * The jester's toolkit of visual chaos
+ */
+
+/* ===== CSS Variables ===== */
+:root {
+    /* Colors */
+    --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --bg-card-hover: rgba(255, 255, 255, 0.08);
+    
+    --text-primary: #eee;
+    --text-secondary: #888;
+    --text-muted: #aaa;
+    
+    --accent-primary: #ff6b6b;
+    --accent-secondary: #ffd93d;
+    --accent-tertiary: #ff8e53;
+    
+    --border-subtle: rgba(255, 255, 255, 0.1);
+    --border-accent: var(--accent-primary);
+    
+    /* Typography */
+    --font-main: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-display: var(--font-main);
+    
+    /* Spacing */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+    
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+}
+
+/* ===== Reset & Base ===== */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-main);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-md);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* ===== Typography ===== */
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 var(--space-sm);
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+h2 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+}
+
+p {
+    margin: 0 0 var(--space-sm);
+}
+
+a {
+    color: var(--accent-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--accent-primary);
+}
+
+/* ===== Layout Components ===== */
+.app-container {
+    background: var(--bg-card);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    margin-top: var(--space-md);
+}
+
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 var(--space-sm);
+}
+
+/* ===== Navigation ===== */
+.site-nav {
+    padding: var(--space-sm) 0;
+    margin-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.nav-home {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-weight: 600;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    transition: background 0.2s ease;
+}
+
+.nav-home:hover {
+    background: var(--bg-card-hover);
+    color: var(--accent-primary);
+}
+
+/* ===== App Cards (for landing page) ===== */
+.app-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+}
+
+.app-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+}
+
+.app-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-primary);
+    transform: translateY(-4px);
+    color: inherit;
+}
+
+.app-card .app-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-sm);
+}
+
+.app-card h3 {
+    color: var(--accent-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+.app-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* ===== Form Elements ===== */
+label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+    font-family: inherit;
+}
+
+/* ===== Buttons ===== */
+.btn {
+    display: inline-block;
+    padding: var(--space-sm) var(--space-md);
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-tertiary));
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: scale(1.02);
+    color: white;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* ===== Utilities ===== */
+.text-center { text-align: center; }
+.text-gradient { 
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.muted { color: var(--text-muted); }
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+    body {
+        padding: var(--space-sm);
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .app-container {
+        padding: var(--space-md);
+    }
+    
+    .app-grid {
+        grid-template-columns: 1fr;
+    }
+}

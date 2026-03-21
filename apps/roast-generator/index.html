@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roast Generator 3000</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="site-nav">
+        <a href="/" class="nav-home">← Back to Motley</a>
+    </nav>
+
+    <main class="app-container">
+        <div class="jester">🃏</div>
+        <h1>Roast Generator 3000</h1>
+        <p class="subtitle">Enter a name. Receive destruction. Simple.</p>
+        
+        <div class="input-section">
+            <label for="target">Who needs to be humbled?</label>
+            <input type="text" id="target" placeholder="Enter name..." autofocus>
+        </div>
+        
+        <button onclick="generateRoast()">GENERATE ROAST 🔥</button>
+        
+        <div class="roast-box" id="roastBox">
+            Enter a name above and witness devastation
+        </div>
+        
+        <div class="instructions">
+            <strong>Disclaimer:</strong> Side effects may include humility, laughter, and checking if this person is mad at you.
+        </div>
+    </main>
+
+    <script>
+        const roasts = [
+            "You have the energy of someone who asks for the bill immediately after the food arrives.",
+            "You're the reason people say 'some people have no chill' in your general direction.",
+            "Your personality is like a WiFi signal - present but not strong enough to connect with anything.",
+            "You give off vibes that you still have a framed photo of yourself on your desk from 2019.",
+            "You're that notification that shows up just to tell you something already finished loading.",
+            "The bar is underground and somehow you still trip over it.",
+            "You have the confidence of someone who's never been to a group project.",
+            "You're like a software update that keeps reminding you it exists but never improves anything.",
+            "Your best quality is that you haven't peaked yet. Your worst quality is that you never will.",
+            "You bring the energy of someone who says 'I speak my mind' as an apology for being annoying.",
+            "You're the human equivalent of a loading screen - just something you wait through.",
+            "You've been called 'basic' as a compliment at least three times in your life.",
+            "You're like a Wikipedia article that cites itself.",
+            "Your standards are low enough that you think this roast was mean.",
+            "You're proof that evolution sometimes takes the scenic route.",
+            "You have the resting face of someone who just got caught doing something.",
+            "You're that group project member who 'forgot' to do their part but had time to update their story.",
+            "You give off 'I was absent the day they taught boundaries' energy.",
+            "Your aura is that嘣 sound Windows makes when you plug something in wrong.",
+            "You're the reason people say 'literally' before stating something completely ordinary.",
+            "You've never had an original thought but you deliver them with so much confidence.",
+            "Your LinkedIn headline is probably 'Coffee Enthusiast | Foodie | Dog Lover' unironically.",
+            "You're that group chat message where everyone reads it but nobody responds.",
+            "Your charisma is like an error message nobody understands.",
+            "You're the reason autocorrect exists - to save you from yourself.",
+            "Your best comeback is 'well I thought it was funny.' It wasn't.",
+            "You're the human equivalent of skipping the tutorial and then being confused.",
+            "You've been 'about to start' something for at least 6 months. We know who you are.",
+            "Your idea of a spontaneous trip is going to a different aisle at the grocery store.",
+            "You're the reason they added 'receipts' to group chats."
+        ];
+        
+        const endings = [
+            "No cap.",
+            "Fr fr.",
+            "This is coming from a place of love. A cold, dark place.",
+            "Take it to the group chat, bestie.",
+            "The receipts write themselves.",
+            "We all know who this is.",
+            "You're not even gonna try to fight back, are you?",
+            "Drop this in the group chat and don't speak.",
+            "This is giving main character energy. Not good main character.",
+            "The jester has spoken."
+        ];
+        
+        function generateRoast() {
+            const input = document.getElementById('target');
+            const box = document.getElementById('roastBox');
+            const name = input.value.trim();
+            
+            if (!name) {
+                box.textContent = "You gotta enter a name first, coward.";
+                box.style.borderColor = "#ffd93d";
+                return;
+            }
+            
+            box.className = "roast-box loading";
+            box.textContent = "Consulting the chaos oracles...";
+            
+            setTimeout(() => {
+                const roast = roasts[Math.floor(Math.random() * roasts.length)];
+                const ending = endings[Math.floor(Math.random() * endings.length)];
+                
+                box.className = "roast-box roasted";
+                box.textContent = name + ": " + roast + " " + ending;
+                box.style.borderColor = "#ff6b6b";
+                
+                input.value = "";
+            }, 800 + Math.random() * 400);
+        }
+        
+        document.getElementById('target').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generateRoast();
+        });
+    </script>
+</body>
+</html>
