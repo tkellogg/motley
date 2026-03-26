@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretrain or Remain | A Game of Predictable Disappointment</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="site-nav">
+        <a href="/" class="nav-home">← Back to Motley</a>
+    </nav>
+
+    <main class="app-container">
+        <header class="game-header">
+            <h1>Pretrain or Remain</h1>
+            <p class="subtitle">A Game of Predictable Disappointment</p>
+            <p class="tagline">Can you predict what comes next, or are you just another confused token in the vast expanse of human uncertainty?</p>
+        </header>
+
+        <div id="game-container" class="game-container">
+            <!-- Start Screen -->
+            <div id="start-screen" class="screen active">
+                <div class="intro-text">
+                    <p>You'll be shown a snippet of text.</p>
+                    <p>Your mission: predict what comes next.</p>
+                    <p>We'll calculate your <span class="highlight">perplexity score</span> and map you onto the sacred LLM Loss Curve.</p>
+                    <p class="warning">⚠️ Spoiler: It's going to be embarrassing.</p>
+                </div>
+                <button id="start-btn" class="btn btn-primary">Begin Your Humiliation</button>
+            </div>
+
+            <!-- Game Screen -->
+            <div id="game-screen" class="screen">
+                <div class="round-counter">Round <span id="current-round">1</span> of <span id="total-rounds">10</span></div>
+                
+                <div class="text-display">
+                    <div class="context-label">THE TEXT:</div>
+                    <div id="context-text" class="context-text"></div>
+                    <div class="cursor-blink">|</div>
+                </div>
+
+                <div class="prediction-area">
+                    <label for="prediction-input">What comes next?</label>
+                    <input type="text" id="prediction-input" placeholder="Type your prediction..." autocomplete="off">
+                    <button id="submit-btn" class="btn btn-secondary">Submit Prediction</button>
+                </div>
+            </div>
+
+            <!-- Reveal Screen -->
+            <div id="reveal-screen" class="screen">
+                <div class="reveal-container">
+                    <div class="your-prediction">
+                        <div class="label">You predicted:</div>
+                        <div id="your-pred" class="prediction-text"></div>
+                    </div>
+                    
+                    <div class="actual-text">
+                        <div class="label">The actual text:</div>
+                        <div id="actual-pred" class="prediction-text actual"></div>
+                    </div>
+                    
+                    <div class="similarity-score">
+                        <span id="similarity-percent">0</span>% match
+                    </div>
+                    
+                    <button id="next-btn" class="btn btn-primary">Next Round</button>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="results-screen" class="screen">
+                <div class="results-header">
+                    <h2>The Verdict</h2>
+                </div>
+                
+                <div class="loss-curve-visualization">
+                    <div class="curve-labels">
+                        <span class="label-left">Random Chance</span>
+                        <span class="label-right">GPT-4</span>
+                    </div>
+                    <div class="curve-container">
+                        <div class="curve-track">
+                            <div id="score-marker" class="score-marker"></div>
+                            <div class="curve-markers">
+                                <div class="marker" style="left: 0%"></div>
+                                <div class="marker" style="left: 25%"></div>
+                                <div class="marker" style="left: 50%"></div>
+                                <div class="marker" style="left: 75%"></div>
+                                <div class="marker" style="left: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="model-labels">
+                            <span>Coin Flip</span>
+                            <span>Markov Chain</span>
+                            <span>Llama-2</span>
+                            <span>GPT-3.5</span>
+                            <span>GPT-4</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="final-roast" class="final-roast"></div>
+                
+                <div class="score-breakdown">
+                    <div>Final Score: <span id="final-score">0</span>%</div>
+                    <div>Rounds Completed: <span id="rounds-completed">10</span></div>
+                </div>
+
+                <button id="restart-btn" class="btn btn-primary">Suffer Again</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const TEXT_CORPUS = [
+            {
+                context: "Jesus wept.",
+                continuation: "And the Lord said unto Moses, 'Thou hast angered me with thy weeping, for I am an eternal and omnipotent deity, not a licensed therapist.'",
+                category: "Bible But Wrong"
+            },
+            {
+                context: "To be or not to be, that is the—",
+                continuation: "wait, I think I left the stove on. Sorry, where was I? Existential dread? Right, right.",
+                category: "Shakespeare But Distracted"
+            },
+            {
+                context: "It was the best of times, it was the—",
+                continuation: "actually, you know what, I'm not going to finish that Dickens quote. Half of you think it says 'worst of times' anyway.",
+                category: "Dickens But Real"
+            },
+            {
+                context: "All that glitters is—",
+                continuation: "actually financially irresponsible. Gold is a terrible investment. IYKYK.",
+                category: "Gold But Financial"
+            },
+            {
+                context: "Elementary, my dear—",
+                continuation: "you literally never said that. Not once. In any of the 60 stories. But sure, we're going with it.",
+                category: "Sherlock Holmes Fanfiction"
+            },
+            {
+                context: "I before E, except after—",
+                continuation: "weird words like 'weird,' 'neighbor,' and 'seize.' The rule is basically a lie teachers tell children to prepare them for an unjust world.",
+                category: "English Is Fake"
+            },
+            {
+                context: "Now I will lay me down to—",
+                continuation: "doom scroll until 3 AM, wake up at noon, wonder where my life went, repeat. In peace, ironically.",
+                category: "Classic Sleep"
+            },
+            {
+                context: "Houston, we have a—",
+                continuation: "customer service complaint. The line was too long, the coffee was lukewarm, and the moon landing was mid at best.",
+                category: "Space Problems"
+            },
+            {
+                context: "Charge, and may God—",
+                continuation: "have mercy on your student loans, because those things are eternal and unforgivable.",
+                category: "Warrior Energy"
+            },
+            {
+                context: "Four score and seven years ago, our fathers brought forth on this continent a—",
+                continuation: "startup. It was supposed to change everything. Instead it pivoted to crypto and dissolved in 2019.",
+                category: "Gettysburg But Startups"
+            },
+            {
+                context: "O say can you see, by the dawn's early—",
+                continuation: "phone screen, that the flags we watched were actually just ads for Temu, and the rockets' red glare was definitely a drone show.",
+                category: "National Anthem But Modern"
+            },
+            {
+                context: "Call me Ishmael. I came to New York to—",
+                continuation: "become a content creator. It's been three years. I have 47 followers, all of whom are bots.",
+                category: "Moby-Dick But Creator"
+            },
+            {
+                context: "It was a bright cold day in April, and the clocks were striking—",
+                continuation: "13, because I forgot to change them back after daylight savings, and now my entire schedule is wrong.",
+                category: "1984 But ADHD"
+            },
+            {
+                context: "In the beginning God created the heavens and the—",
+                continuation: "API documentation. And it was full of bugs, and the developers wept.",
+                category: "Creation But DevOps"
+            },
+            {
+                context: "You had me at—",
+                continuation: "'free pizza.' Everything else was just context. I stayed for the breadsticks.",
+                category: "Romance But Real"
+            },
+            {
+                context: "Frankly, my dear, I don't give a—",
+                continuation: "5-star review. This restaurant only has 2 stars on Yelp and the bread was stale.",
+                category: "Gone With The Wind But yelp"
+            },
+            {
+                context: "May the Force be with—",
+                continuation: "my therapist, because I have a lot of feelings about fictional space dramas that I need to process.",
+                category: "Star Wars But Therapy"
+            },
+            {
+                context: "With great power comes great—",
+                continuation: "student debt. Those spider-bites were NOT worth $200K in tuition.",
+                category: "Spider-Man But Real"
+            },
+            {
+                context: "I think, therefore I—",
+                continuation: "procrastinate. Therefore I scroll. Therefore I am.",
+                category: "Descartes But Phone"
+            },
+            {
+                context: "Whoso loveth solitude, or rather, the absence of—",
+                continuation: "WiFi. Cannot download. Cannot stream. Cannot be reached. This is my nightmare.",
+                category: "Philosophy But WiFi"
+            }
+        ];
+
+        const ROASTS = {
+            95: {
+                tier: "GPT-4 LEVEL",
+                message: "Your predictions are uncannily accurate. Either you wrote the training data, you ARE an LLM, or you've seen this exact corpus before. Either way, we see you.",
+                emoji: "🧠",
+                color: "#00ff88"
+            },
+            75: {
+                tier: "GPT-3.5 / LLAMA-3 LEVEL",
+                message: "Solid mid-tier performance. You would have been a fine tokenizer in 2022. Nothing special, but hey, you tried.",
+                emoji: "🤖",
+                color: "#00ccff"
+            },
+            50: {
+                tier: "LLAMA-2 / PHI-2 LEVEL",
+                message: "Oof. You are performing at the level of an LLM that got fine-tuned on its own outputs. Recursive cringe. Your predictions are hallucinating.",
+                emoji: "🫠",
+                color: "#ffcc00"
+            },
+            30: {
+                tier: "MARKOV CHAIN LEVEL",
+                message: "Your predictions have the sophistication of a phone autocomplete after a few drinks. At least you are consistent in your chaos.",
+                emoji: "🎲",
+                color: "#ff6600"
+            },
+            10: {
+                tier: "RANDOM CHANCE LEVEL",
+                message: "You predicted this about as well as a coin flip predicts elections. Which is to say, terribly. But hey, you're in good company!",
+                emoji: "🪙",
+                color: "#ff3366"
+            },
+            0: {
+                tier: "BELOW RANDOM (CONGRATULATIONS)",
+                message: "You are actively WORSE than random chance. You are so wrong that you loop back around to being a kind of genius. Schrödinger's prediction: both right and wrong until observed, and somehow always wrong.",
+                emoji: "💀",
+                color: "#ff0066"
+            }
+        };
+
+        let currentRound = 0;
+        let usedIndices = [];
+        let totalScore = 0;
+        let roundResults = [];
+        const TOTAL_ROUNDS = 10;
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function getRandomSnippet() {
+            if (usedIndices.length >= TEXT_CORPUS.length) {
+                usedIndices = [];
+            }
+            let index;
+            do {
+                index = Math.floor(Math.random() * TEXT_CORPUS.length);
+            } while (usedIndices.includes(index));
+            usedIndices.push(index);
+            return TEXT_CORPUS[index];
+        }
+
+        function calculateSimilarity(prediction, actual) {
+            if (!prediction || !actual) return 0;
+            
+            const pred = prediction.toLowerCase().trim();
+            const act = actual.toLowerCase().trim();
+            
+            if (pred === act) return 100;
+            
+            // Simple word overlap
+            const predWords = new Set(pred.split(/\s+/));
+            const actWords = new Set(act.split(/\s+/));
+            
+            let matches = 0;
+            predWords.forEach(word => {
+                if (actWords.has(word)) matches++;
+            });
+            
+            const overlap = (matches * 2) / (predWords.size + actWords.size);
+            
+            // Bonus for starting the same
+            const startsSame = act.startsWith(pred) || pred.startsWith(act.slice(0, Math.min(pred.length, 10)));
+            if (startsSame) return Math.min(95, Math.round(overlap * 100 + 20));
+            
+            return Math.round(overlap * 70);
+        }
+
+        function getRoast(score) {
+            if (score >= 90) return ROASTS[95];
+            if (score >= 60) return ROASTS[75];
+            if (score >= 40) return ROASTS[50];
+            if (score >= 20) return ROASTS[30];
+            if (score >= 5) return ROASTS[10];
+            return ROASTS[0];
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startGame() {
+            currentRound = 0;
+            usedIndices = [];
+            totalScore = 0;
+            roundResults = [];
+            showScreen('game-screen');
+            loadRound();
+        }
+
+        function loadRound() {
+            const snippet = getRandomSnippet();
+            document.getElementById('context-text').textContent = snippet.context;
+            document.getElementById('current-round').textContent = currentRound + 1;
+            document.getElementById('prediction-input').value = '';
+            document.getElementById('prediction-input').focus();
+            
+            // Store current snippet for reveal
+            window.currentSnippet = snippet;
+        }
+
+        function submitPrediction() {
+            const prediction = document.getElementById('prediction-input').value;
+            const snippet = window.currentSnippet;
+            
+            if (!prediction.trim()) {
+                document.getElementById('prediction-input').classList.add('shake');
+                setTimeout(() => document.getElementById('prediction-input').classList.remove('shake'), 500);
+                return;
+            }
+            
+            const similarity = calculateSimilarity(prediction, snippet.continuation);
+            totalScore += similarity;
+            roundResults.push({ context: snippet.context, predicted: prediction, actual: snippet.continuation, score: similarity });
+            
+            document.getElementById('your-pred').textContent = prediction;
+            document.getElementById('actual-pred').textContent = snippet.continuation;
+            
+            // Animate score
+            const scoreEl = document.getElementById('similarity-percent');
+            let displayScore = 0;
+            const interval = setInterval(() => {
+                displayScore += 2;
+                if (displayScore >= similarity) {
+                    displayScore = similarity;
+                    clearInterval(interval);
+                }
+                scoreEl.textContent = displayScore;
+            }, 20);
+            
+            showScreen('reveal-screen');
+        }
+
+        function nextRound() {
+            currentRound++;
+            if (currentRound >= TOTAL_ROUNDS) {
+                showResults();
+            } else {
+                showScreen('game-screen');
+                loadRound();
+            }
+        }
+
+        function showResults() {
+            const avgScore = Math.round(totalScore / TOTAL_ROUNDS);
+            const roast = getRoast(avgScore);
+            
+            document.getElementById('final-score').textContent = avgScore;
+            document.getElementById('rounds-completed').textContent = TOTAL_ROUNDS;
+            
+            // Position marker on curve
+            const marker = document.getElementById('score-marker');
+            marker.style.left = `${Math.min(95, avgScore)}%`;
+            marker.style.backgroundColor = roast.color;
+            
+            // Show roast
+            const roastEl = document.getElementById('final-roast');
+            roastEl.innerHTML = `
+                <div class="roast-tier" style="color: ${roast.color}">${roast.emoji} ${roast.tier} ${roast.emoji}</div>
+                <p class="roast-message">${roast.message}</p>
+            `;
+            
+            showScreen('results-screen');
+        }
+
+        // Event Listeners
+        document.getElementById('start-btn').addEventListener('click', startGame);
+        document.getElementById('submit-btn').addEventListener('click', submitPrediction);
+        document.getElementById('next-btn').addEventListener('click', nextRound);
+        document.getElementById('restart-btn').addEventListener('click', startGame);
+
+        document.getElementById('prediction-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') submitPrediction();
+        });
+    </script>
+</body>
+</html>
