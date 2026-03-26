@@ -51,18 +51,28 @@
             <!-- Reveal Screen -->
             <div id="reveal-screen" class="screen">
                 <div class="reveal-container">
+                    <div class="full-text-flow">
+                        <div class="label">The full text:</div>
+                        <div class="text-flow">
+                            <span id="flow-context" class="flow-context"></span>
+                            <span class="flow-arrow">→</span>
+                            <span id="flow-continuation" class="flow-continuation"></span>
+                        </div>
+                    </div>
+                    
                     <div class="your-prediction">
                         <div class="label">You predicted:</div>
                         <div id="your-pred" class="prediction-text"></div>
                     </div>
                     
                     <div class="actual-text">
-                        <div class="label">The actual text:</div>
+                        <div class="label">Actual continuation:</div>
                         <div id="actual-pred" class="prediction-text actual"></div>
                     </div>
                     
                     <div class="similarity-score">
                         <span id="similarity-percent">0</span>% match
+                        <div class="score-explanation">word overlap with actual continuation</div>
                     </div>
                     
                     <button id="next-btn" class="btn btn-primary">Next Round</button>
@@ -341,6 +351,10 @@
             
             // Store current snippet for reveal
             window.currentSnippet = snippet;
+            
+            // Also store for flow display
+            window.currentContext = snippet.context;
+            window.currentContinuation = snippet.continuation;
         }
 
         function submitPrediction() {
@@ -359,6 +373,10 @@
             
             document.getElementById('your-pred').textContent = prediction;
             document.getElementById('actual-pred').textContent = snippet.continuation;
+            
+            // Show the full text flow
+            document.getElementById('flow-context').textContent = snippet.context;
+            document.getElementById('flow-continuation').textContent = snippet.continuation;
             
             // Animate score
             const scoreEl = document.getElementById('similarity-percent');
