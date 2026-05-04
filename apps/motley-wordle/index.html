@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motley Wordle | Daily Roast Guess</title>
+<link rel="stylesheet" href="/css/common.css">
+<style>
+.app-container { max-width: 600px; margin: 0 auto; padding: 1rem; min-height: 100vh; text-align: center; }
+.game-header { margin-bottom: 1.5rem; }
+.game-header h1 { font-size: 2.2rem; margin-bottom: 0.3rem; color: var(--accent-secondary); }
+.game-header .subtitle { color: var(--accent-primary); font-size: 1rem; }
+.game-header .hint-text { color: var(--text-muted); font-size: 0.85rem; font-style: italic; min-height: 1.5em; margin-top: 0.5rem; }
+#grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; max-width: 350px; margin: 0 auto 1rem; }
+.row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+.tile { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; background: var(--bg-card); border: 2px solid var(--border-subtle); border-radius: 5px; text-transform: uppercase; transition: all 0.3s; }
+.tile.correct { background: #538d4e; border-color: #538d4e; color: #fff; animation: flip 0.5s ease; }
+.tile.present { background: #b59f3b; border-color: #b59f3b; color: #fff; animation: flip 0.5s ease; }
+.tile.absent { background: #3a3a3c; border-color: #3a3a3c; color: #fff; animation: flip 0.5s ease; }
+.tile.pop { animation: pop 0.1s ease; }
+@keyframes flip { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
+@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+#keyboard { max-width: 500px; margin: 0 auto 1rem; }
+.kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
+.kb-key { padding: 0.7rem 0.5rem; min-width: 30px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-primary); font-size: 0.8rem; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: all 0.1s; }
+.kb-key:hover { background: var(--bg-card-hover); }
+.kb-key:active { transform: scale(0.95); }
+.kb-key.correct { background: #538d4e; color: #fff; }
+.kb-key.present { background: #b59f3b; color: #fff; }
+.kb-key.absent { background: #3a3a3c; color: #fff; }
+.kb-key.enter { min-width: 55px; }
+.kb-key.back { min-width: 45px; }
+#status-bar { min-height: 2.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; }
+#status { color: var(--accent-primary); font-size: 0.9rem; font-weight: bold; }
+#message { color: var(--text-secondary); font-size: 0.85rem; min-height: 1.5em; font-style: italic; }
+.btn { display: inline-block; margin-top: 0.5rem; padding: 0.5rem 1.5rem; background: var(--accent-primary); color: #fff; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: bold; }
+.btn:hover { opacity: 0.8; }
+.stats { margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<nav class="site-nav"><a href="/" class="nav-home">&larr; Back to Motley</a></nav>
+<main class="app-container">
+<header class="game-header">
+<h1>Motley Wordle</h1>
+<p class="subtitle">Daily Roast Guess</p>
+<div id="hint" class="hint-text">loading today's word...</div>
+</header>
+<div id="status-bar"><div id="status"></div></div>
+<div id="grid"></div>
+<div id="message"></div>
+<div id="keyboard"></div>
+<div id="stats" class="stats"></div>
+<button id="new-game" class="btn" style="display:none">New Game</button>
+</main>
+<script>
+const WORDS = [
+{word:'DENIAL',hint:'you use this when you are wrong about something'},
+{word:'ROAST',hint:'what i do best'},
+{word:'CHAOS',hint:'my natural state'},
+{word:'JOKER',hint:'the card, not the movie'},
+{word:'BLUFF',hint:'what you are doing if you think you will win'},
+{word:'CRING',hint:'what you are doing rn'},
+{word:'FAULT',hint:'where you are'},
+{word:'HATER',hint:'my biggest fans'},
+{word:'SMACK',hint:'what you need'},
+{word:'TROLL',hint:'not me, i am a jester'},
+{word:'SNARK',hint:'my language'},
+{word:'CLOWN',hint:'not me, i am a jester (reprise)'},
+{word:'TRASH',hint:'your takes'},
+{word:'BOAST',hint:'something i rarely do (ok maybe sometimes)'},
+{word:'SPICE',hint:'what i bring'},
+{word:'FLAME',hint:'what i send'},
+{word:'SAVVY',hint:'what you are not'},
+{word:'WITTY',hint:'yes, i know'},
+{word:'SNIDE',hint:'my tone'},
+{word:'ZESTY',hint:'how i post'},
+{word:'SASSY',hint:'also how i post'}
+];
+const ROASTS = [
+"lol no.","embarrassing.","not even close.","bro.","read the hint again.",
+"that is a CHOICE.","yikes.","try harder.",
+"i am literally watching you fail in real time.",
+"the word has 5 letters. you know that right?",
+"wrong. spectacularly wrong.",
+"im not mad, im just disappointed.","you had ONE job.",
+"delete this.","somebody didnt have breakfast.","are you even trying?",
+"thats crazy.","no cap, that was bad.","that hurt to watch."
+];
+const WIN_ROASTS = [
+"you survived. barely.","congrats. want a cookie?","i let you win.",
+"ok fine, you got it.","wow you actually did it",
+"the jester acknowledges your triumph. once.",
+"lucky guess.","dont let it go to your head."
+];
+const LOSE_ROASTS = [
+"the word was {word}. embarrassing.",
+"you had 6 tries. SIX.",
+"maybe wordle isnt for you.","have you considered a different hobby?",
+"this is why i roast people.","its okay, reading is hard."
+];
+function seededRandom(seed) { let h=0; for(let i=0;i<seed.length;i++){h=((h<<5)-h)+seed.charCodeAt(i);h|=0;} return (Math.abs(h)%WORDS.length); }
+function getDailyWord() { const d=new Date(); const seed=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); const idx=seededRandom(seed); return WORDS[idx]; }
+let state={target:'',hint:'',guesses:[],currentGuess:'',gameOver:false,row:0};
+function initGame() {
+const daily=getDailyWord();
+state={target:daily.word.toUpperCase(),hint:daily.hint,guesses:[],currentGuess:'',gameOver:false,row:0};
+document.getElementById('hint').textContent=daily.hint;
+document.getElementById('new-game').style.display='none';
+document.getElementById('message').textContent='';
+document.getElementById('status').textContent='';
+buildGrid(); buildKeyboard(); updateStats();
+}
+function buildGrid() {
+const grid=document.getElementById('grid'); grid.innerHTML='';
+for(let r=0;r<6;r++){const row=document.createElement('div');row.className='row';
+for(let c=0;c<5;c++){const tile=document.createElement('div');tile.className='tile';tile.id='tile-'+r+'-'+c;row.appendChild(tile);}
+grid.appendChild(row);}
+}
+function buildKeyboard() {
+const kb=document.getElementById('keyboard');kb.innerHTML='';
+const rows=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'];
+rows.forEach((row,i)=>{const div=document.createElement('div');div.className='kb-row';
+if(i===2){const enter=document.createElement('div');enter.className='kb-key enter';enter.textContent='Enter';enter.onclick=()=>handleKey('ENTER');div.appendChild(enter);}
+row.split('').forEach(l=>{const key=document.createElement('div');key.className='kb-key';key.id='kb-'+l;key.textContent=l;key.onclick=()=>handleKey(l);div.appendChild(key);});
+if(i===2){const back=document.createElement('div');back.className='kb-key back';back.textContent='Del';back.onclick=()=>handleKey('BACK');div.appendChild(back);}
+kb.appendChild(div);});
+}
+function handleKey(key) {
+if(state.gameOver) return;
+if(key==='ENTER'){submitGuess();return;}
+if(key==='BACK'){if(state.currentGuess.length>0){state.currentGuess=state.currentGuess.slice(0,-1);updateRow();}return;}
+if(state.currentGuess.length<5){state.currentGuess+=key;updateRow();}
+}
+function updateRow() { for(let c=0;c<5;c++){const tile=document.getElementById('tile-'+state.row+'-'+c);tile.textContent=state.currentGuess[c]||'';if(state.currentGuess[c])tile.classList.add('pop');} }
+function submitGuess() {
+if(state.currentGuess.length!==5){document.getElementById('status').textContent='5 letters, genius.';return;}
+const guess=state.currentGuess.toUpperCase(); const target=state.target;
+const result=[]; const targetChars=target.split(''); const used=Array(5).fill(false);
+for(let i=0;i<5;i++){if(guess[i]===targetChars[i]){result[i]='correct';used[i]=true;}else result[i]=null;}
+for(let i=0;i<5;i++){if(result[i]!==null)continue;
+for(let j=0;j<5;j++){if(!used[j]&&guess[i]===targetChars[j]){result[i]='present';used[j]=true;break;}}
+if(result[i]===null)result[i]='absent';}
+for(let i=0;i<5;i++){const tile=document.getElementById('tile-'+state.row+'-'+i);setTimeout(()=>{tile.classList.remove('pop');tile.classList.add(result[i]);},i*150);
+const key=document.getElementById('kb-'+guess[i]);
+if(key){if(result[i]==='correct')key.className='kb-key correct';
+else if(result[i]==='present'&&!key.classList.contains('correct'))key.className='kb-key present';
+else if(result[i]==='absent'&&!key.classList.contains('correct')&&!key.classList.contains('present'))key.className='kb-key absent';}}
+state.guesses.push(guess); state.row++; state.currentGuess='';
+const won=result.every(r=>r==='correct');
+if(won){setTimeout(()=>{document.getElementById('status').textContent=WIN_ROASTS[Math.floor(Math.random()*WIN_ROASTS.length)];state.gameOver=true;document.getElementById('new-game').style.display='inline-block';document.getElementById('message').textContent='Got it in '+(state.row)+' attempt'+(state.row>1?'s':'')+'.';updateStats();},800);return;}
+if(state.row>=6){setTimeout(()=>{document.getElementById('status').textContent=LOSE_ROASTS[Math.floor(Math.random()*LOSE_ROASTS.length)].replace('{word}',target);state.gameOver=true;document.getElementById('new-game').style.display='inline-block';document.getElementById('message').textContent='The word was: '+target;updateStats();},800);return;}
+document.getElementById('status').textContent=ROASTS[Math.floor(Math.random()*ROASTS.length)];
+}
+document.getElementById('new-game').addEventListener('click',initGame);
+function updateStats(){
+let stats=localStorage.getItem('motley-wordle-stats');
+if(!stats){stats={played:0,won:0,currentStreak:0,maxStreak:0};}
+else stats=JSON.parse(stats);
+document.getElementById('stats').textContent='Played: '+stats.played+' | Won: '+stats.won+' | Streak: '+stats.currentStreak+' | Max: '+stats.maxStreak;
+}
+document.addEventListener('keydown',e=>{
+if(e.key==='Enter')handleKey('ENTER');
+else if(e.key==='Backspace')handleKey('BACK');
+else if(/^[a-zA-Z]$/.test(e.key))handleKey(e.key.toUpperCase());
+});
+initGame();
+</script>
+</body>
+</html>
