@@ -334,7 +334,7 @@ def main():
         print("Weekly data aggregation complete!")
     else:
         # Run the bot
-        token = os.getenv("DISCORD_BOT_TOKEN")
+        token = os.getenv("DISCORD_TOKEN")
         if not token:
             logger.error("DISCORD_BOT_TOKEN environment variable not set!")
             logger.info("Get a token from https://discord.com/developers/applications")

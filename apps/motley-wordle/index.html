@@ -100,7 +100,7 @@ const LOSE_ROASTS = [
 "this is why i roast people.","its okay, reading is hard."
 ];
 function seededRandom(seed) { let h=0; for(let i=0;i<seed.length;i++){h=((h<<5)-h)+seed.charCodeAt(i);h|=0;} return (Math.abs(h)%WORDS.length); }
-function getDailyWord() { const d=new Date(); const seed=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); const idx=seededRandom(seed); return WORDS[idx]; }
+function getDailyWord() { const d=new Date(); const seed=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); const idx=seededRandom(seed); return WORDS[idx]; }
 let state={target:'',hint:'',guesses:[],currentGuess:'',gameOver:false,row:0};
 function initGame() {
 const daily=getDailyWord();
