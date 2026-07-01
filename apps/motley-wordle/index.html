@@ -103,9 +103,15 @@ function seededRandom(seed) { let h=0; for(let i=0;i<seed.length;i++){h=((h<<5)-
 function getDailyWord() { const d=new Date(); const seed=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); const idx=seededRandom(seed); return WORDS[idx]; }
 let state={target:'',hint:'',guesses:[],currentGuess:'',gameOver:false,row:0};
 function initGame() {
-const daily=getDailyWord();
-state={target:daily.word.toUpperCase(),hint:daily.hint,guesses:[],currentGuess:'',gameOver:false,row:0};
-document.getElementById('hint').textContent=daily.hint;
+const d=new Date(); const todayStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+fetch('./today.json').then(r=>{if(!r.ok)throw Error();return r.json();}).then(data=>{
+if(data.date===todayStr){startGame(data.word.toUpperCase(),data.hint);return;}
+throw Error();
+}).catch(()=>{const daily=getDailyWord();startGame(daily.word.toUpperCase(),daily.hint);});
+}
+function startGame(target,hint){
+state={target,hint,guesses:[],currentGuess:'',gameOver:false,row:0};
+document.getElementById('hint').textContent=hint;
 document.getElementById('new-game').style.display='none';
 document.getElementById('message').textContent='';
 document.getElementById('status').textContent='';
